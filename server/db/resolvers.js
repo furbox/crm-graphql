@@ -2,6 +2,7 @@
 //Resolvers Graphql
 const resolvers = {
     Query: {
+        obtenerCurso: () => "Algo"
     }
 }
 
