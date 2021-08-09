@@ -1,4 +1,5 @@
 const Usuario = require('../models/Usuario');
+const Producto = require('../models/Producto');
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -15,6 +16,25 @@ const resolvers = {
         obtenerUsuario: async (_, { token }) => {
             const usuarioId = await jwt.verify(token, process.env.JWT_KEY_SECRET);
             return usuarioId;
+        },
+        obtenerProductos: async () => {
+            try {
+                const productos = await Producto.find({});
+                return productos;
+            } catch (error) {
+                console.log('[ERROR]: Q-Prod obtenerProductos', error);
+            }
+        },
+        obtenerProducto: async (_, { id }) => {
+            try {
+                const producto = await Producto.findById(id);
+                if (!producto) {
+                    throw new Error('Producto no encontrado');
+                }
+                return producto;
+            } catch (error) {
+                console.log('[ERROR]: Q-Prod obtenerProducto', error);
+            }
         }
     },
     Mutation: {
@@ -37,7 +57,7 @@ const resolvers = {
                 await usuario.save();
                 return usuario;
             } catch (error) {
-                console.log('[ERROR]: M-U nuevoUsuario', error)
+                console.log('[ERROR]: M-User nuevoUsuario', error)
             }
         },
         autenticarUsuario: async (_, { input }) => {
@@ -58,6 +78,41 @@ const resolvers = {
             //crear el token
             return {
                 token: crearToken(existeUsuario)
+            }
+        },
+        nuevoProducto: async (_, { input }) => {
+            try {
+                const producto = new Producto(input);
+                await producto.save();
+                return producto;
+            } catch (error) {
+                console.log('[ERROR]: M-Prod nuevoProducto', error);
+            }
+        },
+        actualizarProducto: async (_, { id, input }) => {
+            try {
+                //revisar si el producto existe
+                let producto = await Producto.findById(id);
+                if (!producto) {
+                    throw new Error('El producto no existe!!');
+                }
+                producto = await Producto.findOneAndUpdate({ _id: id }, input, { new: true });
+                return producto;
+            } catch (error) {
+                console.log('[ERROR]: M-Prod actualizarProducto', error);
+            }
+        },
+        eliminarProducto: async (_, { id }) => {
+            try {
+                //revisar si el producto existe
+                let producto = await Producto.findById(id);
+                if (!producto) {
+                    throw new Error('El producto no existe!!');
+                }
+                await Producto.findByIdAndDelete({ _id: id });
+                return "Producto Eliminado"
+            } catch (error) {
+
             }
         }
     }
