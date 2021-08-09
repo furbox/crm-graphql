@@ -1,5 +1,6 @@
 const Usuario = require('../models/Usuario');
 const Producto = require('../models/Producto');
+const Cliente = require('../models/Cliente');
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -34,6 +35,38 @@ const resolvers = {
                 return producto;
             } catch (error) {
                 console.log('[ERROR]: Q-Prod obtenerProducto', error);
+            }
+        },
+        obtenerClientes: async () => {
+            try {
+                const clientes = await Cliente.find({});
+                return clientes;
+            } catch (error) {
+                console.log('[ERROR]: Q-Cli obtenerClientes', error);
+            }
+        },
+        obtenerClientesVendedor: async (_, { }, ctx) => {
+            try {
+                const clientes = await Cliente.find({ vendedor: ctx.usuario.id });
+                return clientes;
+            } catch (error) {
+                console.log('[ERROR]: Q-Cli obtenerClientesVendedor', error);
+            }
+        },
+        obtenerCliente: async (_, { id }, ctx) => {
+            try {
+                const cliente = await Cliente.findById(id);
+                if(!cliente){
+                    throw new Error('El cliente no existe');
+                }
+
+                if(cliente.vendedor.toString() !== ctx.usuario.id ){
+                    throw new Error('No tiene acceso a este cliente.');
+                }
+
+                return cliente;
+            } catch (error) {
+                console.log('[ERROR]: Q-Cli obtenerCliente', error);
             }
         }
     },
@@ -113,6 +146,27 @@ const resolvers = {
                 return "Producto Eliminado"
             } catch (error) {
 
+            }
+        },
+        nuevoCliente: async (_, { input }, ctx) => {
+            const { email } = input;
+            try {
+                //verificar si el cliente ya se encuentra registrado
+                let cliente = await Cliente.findOne({ email });
+                if (cliente) {
+                    throw new Error('El cliente ya existe');
+                }
+
+                cliente = new Cliente(input);
+
+                //asignar vendedor
+                cliente.vendedor = ctx.usuario.id;
+
+                //guardar en db
+                await cliente.save();
+                return cliente;
+            } catch (error) {
+                console.log('[ERROR]: M-Cli nuevoCliente', error);
             }
         }
     }
