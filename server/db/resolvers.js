@@ -1,6 +1,7 @@
 const Usuario = require('../models/Usuario');
 const Producto = require('../models/Producto');
 const Cliente = require('../models/Cliente');
+const Pedido = require('../models/Pedido');
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -24,6 +25,7 @@ const resolvers = {
                 return productos;
             } catch (error) {
                 console.log('[ERROR]: Q-Prod obtenerProductos', error);
+                return error;
             }
         },
         obtenerProducto: async (_, { id }) => {
@@ -35,6 +37,7 @@ const resolvers = {
                 return producto;
             } catch (error) {
                 console.log('[ERROR]: Q-Prod obtenerProducto', error);
+                return error;
             }
         },
         obtenerClientes: async () => {
@@ -43,6 +46,7 @@ const resolvers = {
                 return clientes;
             } catch (error) {
                 console.log('[ERROR]: Q-Cli obtenerClientes', error);
+                return error;
             }
         },
         obtenerClientesVendedor: async (_, { }, ctx) => {
@@ -51,6 +55,7 @@ const resolvers = {
                 return clientes;
             } catch (error) {
                 console.log('[ERROR]: Q-Cli obtenerClientesVendedor', error);
+                return error;
             }
         },
         obtenerCliente: async (_, { id }, ctx) => {
@@ -67,6 +72,7 @@ const resolvers = {
                 return cliente;
             } catch (error) {
                 console.log('[ERROR]: Q-Cli obtenerCliente', error);
+                return error;
             }
         }
     },
@@ -90,27 +96,33 @@ const resolvers = {
                 await usuario.save();
                 return usuario;
             } catch (error) {
-                console.log('[ERROR]: M-User nuevoUsuario', error)
+                console.log('[ERROR]: M-User nuevoUsuario', error);
+                return error;
             }
         },
         autenticarUsuario: async (_, { input }) => {
             const { email, password } = input;
 
-            //si el usuario existe
-            const existeUsuario = await Usuario.findOne({ email });
-            if (!existeUsuario) {
-                throw new Error('El usuario no se encuentra registrado!!');
-            }
+            try {
+                //si el usuario existe
+                const existeUsuario = await Usuario.findOne({ email });
+                if (!existeUsuario) {
+                    throw new Error('El usuario no se encuentra registrado!!');
+                }
 
-            //revisar si el password es correcto
-            const passwordCorrecto = bcryptjs.compareSync(password, existeUsuario.password);
-            if (!passwordCorrecto) {
-                throw new Error('Los datos ingresados son incorrectos');
-            }
+                //revisar si el password es correcto
+                const passwordCorrecto = bcryptjs.compareSync(password, existeUsuario.password);
+                if (!passwordCorrecto) {
+                    throw new Error('Los datos ingresados son incorrectos');
+                }
 
-            //crear el token
-            return {
-                token: crearToken(existeUsuario)
+                //crear el token
+                return {
+                    token: crearToken(existeUsuario)
+                }
+            } catch (error) {
+                console.log('[ERROR]: M-Auth autenticarUsuario', error);
+                return error;
             }
         },
         nuevoProducto: async (_, { input }) => {
@@ -120,6 +132,7 @@ const resolvers = {
                 return producto;
             } catch (error) {
                 console.log('[ERROR]: M-Prod nuevoProducto', error);
+                return error;
             }
         },
         actualizarProducto: async (_, { id, input }) => {
@@ -133,6 +146,7 @@ const resolvers = {
                 return producto;
             } catch (error) {
                 console.log('[ERROR]: M-Prod actualizarProducto', error);
+                return error;
             }
         },
         eliminarProducto: async (_, { id }) => {
@@ -145,7 +159,8 @@ const resolvers = {
                 await Producto.findOneAndDelete({ _id: id });
                 return "Producto Eliminado"
             } catch (error) {
-
+                console.log('[ERROR]: M-Prod eliminarProducto', error);
+                return error;
             }
         },
         nuevoCliente: async (_, { input }, ctx) => {
@@ -167,6 +182,7 @@ const resolvers = {
                 return cliente;
             } catch (error) {
                 console.log('[ERROR]: M-Cli nuevoCliente', error);
+                return error;
             }
         },
         actualizarCliente: async (_, { id, input }, ctx) => {
@@ -186,6 +202,7 @@ const resolvers = {
                 return cliente;
             } catch (error) {
                 console.log('[ERROR]: M-Cli actualizarCliente', error);
+                return error;
             }
         },
         eliminarCliente: async (_, { id }, ctx) => {
@@ -205,8 +222,46 @@ const resolvers = {
                 return "Cliente Eliminado";
             } catch (error) {
                 console.log('[ERROR]: M-Cli actualizarCliente', error);
+                return error;
             }
-        }
+        },
+        nuevoPedido: async (_, { input }, ctx) => {
+
+            try {
+                //verificar si el cliente existe
+                const cliente = await Cliente.findById(input.cliente);
+                if (!cliente) {
+                    throw new Error('El Cliente no existe');
+                }
+                //verificar si el cliente es del vendedor
+                if (cliente.vendedor.toString() !== ctx.usuario.id) {
+                    throw new Error('No tiene acceso a este cliente.');
+                }
+                //Revisar stock
+                for await (const articulo of input.pedido) {
+                    const { id } = articulo;
+                    const producto = await Producto.findById(id);
+                    if (articulo.cantidad > producto.existencia) {
+                        throw new Error(`El articulo: ${producto.nombre} excede la cantidad disponible`)
+                    }else{
+                        producto.existencia = producto.existencia - articulo.cantidad;
+                        await producto.save();
+                    }
+                }
+                //crear pedido
+                const pedido = new Pedido(input);
+                //asignar vendedor
+                pedido.vendedor = ctx.usuario.id;
+                //Guardar en la db
+                await pedido.save();
+
+                return pedido;
+
+            } catch (error) {
+                console.log('[ERROR]: M-ped nuevoPedido', error);
+                return error;
+            }
+        },
     }
 }
 
