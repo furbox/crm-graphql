@@ -56,11 +56,11 @@ const resolvers = {
         obtenerCliente: async (_, { id }, ctx) => {
             try {
                 const cliente = await Cliente.findById(id);
-                if(!cliente){
+                if (!cliente) {
                     throw new Error('El cliente no existe');
                 }
 
-                if(cliente.vendedor.toString() !== ctx.usuario.id ){
+                if (cliente.vendedor.toString() !== ctx.usuario.id) {
                     throw new Error('No tiene acceso a este cliente.');
                 }
 
@@ -142,7 +142,7 @@ const resolvers = {
                 if (!producto) {
                     throw new Error('El producto no existe!!');
                 }
-                await Producto.findByIdAndDelete({ _id: id });
+                await Producto.findOneAndDelete({ _id: id });
                 return "Producto Eliminado"
             } catch (error) {
 
@@ -167,6 +167,44 @@ const resolvers = {
                 return cliente;
             } catch (error) {
                 console.log('[ERROR]: M-Cli nuevoCliente', error);
+            }
+        },
+        actualizarCliente: async (_, { id, input }, ctx) => {
+            try {
+                //Verificar si el cliente existe
+                let cliente = await Cliente.findById(id);
+                if (!cliente) {
+                    throw new Error('El Cliente no existe');
+                }
+                //verificar si es cliente del vendedor
+                if (cliente.vendedor.toString() !== ctx.usuario.id) {
+                    throw new Error('No tiene acceso a este cliente.');
+                }
+
+                //guardar el cliente
+                await Cliente.findOneAndUpdate({ _id: id });
+                return cliente;
+            } catch (error) {
+                console.log('[ERROR]: M-Cli actualizarCliente', error);
+            }
+        },
+        eliminarCliente: async (_, { id }, ctx) => {
+            try {
+                //Verificar si el cliente existe
+                let cliente = await Cliente.findById(id);
+                if (!cliente) {
+                    throw new Error('El Cliente no existe');
+                }
+                //verificar si es cliente del vendedor
+                if (cliente.vendedor.toString() !== ctx.usuario.id) {
+                    throw new Error('No tiene acceso a este cliente.');
+                }
+
+                //guardar el cliente
+                cliente = await Cliente.findOneAndDelete({ _id: id });
+                return "Cliente Eliminado";
+            } catch (error) {
+                console.log('[ERROR]: M-Cli actualizarCliente', error);
             }
         }
     }
