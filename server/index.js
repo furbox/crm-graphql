@@ -19,7 +19,7 @@ const server = new ApolloServer({
                 const usuario = jwt.verify(token, process.env.JWT_KEY_SECRET);
                 return { usuario }
             } catch (error) {
-                console.log('[ERROR]: index.js server', error);
+                return Error('[ERROR] jwt index.js server: ',error);
             }
         }
 

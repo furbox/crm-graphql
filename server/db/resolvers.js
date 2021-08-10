@@ -74,6 +74,50 @@ const resolvers = {
                 console.log('[ERROR]: Q-Cli obtenerCliente', error);
                 return error;
             }
+        },
+        obtenerPedidos: async (_, { }, ctx) => {
+            try {
+                const pedidos = await Pedido.find();
+                return pedidos;
+            } catch (error) {
+                console.log('[ERROR]: Q-Ped obtenerPedidos', error);
+                return error;
+            }
+        },
+        obtenerPedidosVendedor: async (_, { }, ctx) => {
+            try {
+                const pedidos = await Pedido.find({ vendedor: ctx.usuario.id });
+                return pedidos;
+            } catch (error) {
+                console.log('[ERROR]: Q-Ped obtenerPedidosVendedor', error);
+                return error;
+            }
+        },
+        obtenerPedido: async (_, { id }, ctx) => {
+            try {
+                const pedido = await Pedido.findById(id);
+                if (!pedido) {
+                    throw new Error('El pedido no existe');
+                }
+
+                if (pedido.vendedor.toString() !== ctx.usuario.id) {
+                    throw new Error('No tiene acceso a este pedido.');
+                }
+
+                return pedido;
+            } catch (error) {
+                console.log('[ERROR]: Q-Ped obtenerPedido', error);
+                return error;
+            }
+        },
+        ontenerPedidosEstado: async (_, { estado }, ctx) => {
+            try {
+                const pedidos = await Pedido.find({ vendedor: ctx.usuario.id, estado });
+                return pedidos;
+            } catch (error) {
+                console.log('[ERROR]: Q-Ped ontenerPedidosEstado', error);
+                return error;
+            }
         }
     },
     Mutation: {
@@ -226,7 +270,6 @@ const resolvers = {
             }
         },
         nuevoPedido: async (_, { input }, ctx) => {
-
             try {
                 //verificar si el cliente existe
                 const cliente = await Cliente.findById(input.cliente);
@@ -243,7 +286,7 @@ const resolvers = {
                     const producto = await Producto.findById(id);
                     if (articulo.cantidad > producto.existencia) {
                         throw new Error(`El articulo: ${producto.nombre} excede la cantidad disponible`)
-                    }else{
+                    } else {
                         producto.existencia = producto.existencia - articulo.cantidad;
                         await producto.save();
                     }
@@ -262,6 +305,69 @@ const resolvers = {
                 return error;
             }
         },
+        actualizarPedido: async (_, { id, input }, ctx) => {
+            try {
+                const pedido = await Pedido.findById(id);
+                if (!pedido) {
+                    throw new Error('El pedido no existe');
+                }
+
+                if (pedido.vendedor.toString() !== ctx.usuario.id) {
+                    throw new Error('No tiene acceso a este pedido.');
+                }
+                //Revisar stock
+                if (input.pedido) {
+                    for await (const articulo of input.pedido) {
+                        const { id, cantidad } = articulo;
+                        const producto = await Producto.findById(id);
+                        const { nombre, existencia } = producto;
+                        if (cantidad > existencia) {
+                            throw new Error(`El articulo: ${nombre} excede la cantidad disponible`)
+                        } else {
+                            const cantidadPrevia = await pedido.pedido.find(item => item.id === id).cantidad;
+                            producto.existencia = existencia + cantidadPrevia - cantidad;
+                            await producto.save();
+                        }
+
+                    }
+                }
+
+                //Guardar Pedido en la db
+                const pedidoUpdate = await Pedido.findOneAndUpdate({ _id: id }, input, { new: true });
+
+                return pedidoUpdate;
+            } catch (error) {
+                console.log('[ERROR]: M-Ped actualizarPedido', error);
+                return error;
+            }
+        },
+        eliminarPedido: async (_, { id }, ctx) => {
+            try {
+                const pedido = await Pedido.findById(id);
+                if (!pedido) {
+                    throw new Error('El pedido no existe');
+                }
+
+                if (pedido.vendedor.toString() !== ctx.usuario.id) {
+                    throw new Error('No tiene acceso a este pedido.');
+                }
+
+                //regresar stock
+                for await (const articulo of pedido.pedido) {
+                    const { id, cantidad } = articulo;
+                    const producto = await Producto.findById(id);
+                    producto.existencia = producto.existencia + cantidad;
+                    await producto.save();
+                }
+
+                //eliminar pedido
+                await Pedido.findOneAndDelete({ _id: id });
+                return "Pedido Eliminado";
+            } catch (error) {
+                console.log('[ERROR]: M-Ped eliminarPedido', error);
+                return error;
+            }
+        }
     }
 }
 
