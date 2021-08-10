@@ -21,4 +21,8 @@ const ProductoSchema = mongoose.Schema({
     timestamps: true
 });
 
+ProductoSchema.index({
+    nombre: 'text'
+});
+
 module.exports = mongoose.model('Producto', ProductoSchema);

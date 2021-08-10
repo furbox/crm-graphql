@@ -118,6 +118,69 @@ const resolvers = {
                 console.log('[ERROR]: Q-Ped ontenerPedidosEstado', error);
                 return error;
             }
+        },
+        mejoresClientes: async () => {
+            try {
+                const clientes = await Pedido.aggregate([
+                    { $match: { estado: "COMPLETADO" } },
+                    {
+                        $group: {
+                            _id: "$cliente",
+                            total: { $sum: '$total' }
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'clientes',
+                            localField: '_id',
+                            foreignField: "_id",
+                            as: "cliente"
+                        }
+                    },
+                    {
+                        $sort: { total: -1 }
+                    }
+                ]);
+                return clientes;
+            } catch (error) {
+                console.log('[ERROR]: Q-Top mejoresClientes', error);
+                return error;
+            }
+        },
+        mejoresVendedores: async () => {
+            try {
+                const vendedores = await Pedido.aggregate([
+                    { $match: { estado: "COMPLETADO" } },
+                    {
+                        $group: {
+                            _id: "$vendedor",
+                            total: { $sum: '$total' }
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'usuarios',
+                            localField: '_id',
+                            foreignField: "_id",
+                            as: "vendedor"
+                        }
+                    },
+                    {
+                        $limit: 50
+                    },
+                    {
+                        $sort: { total: -1 }
+                    }
+                ]);
+                return vendedores;
+            } catch (error) {
+                console.log('[ERROR]: Q-Top mejoresVendedores', error);
+                return error;
+            }
+        },
+        buscarProducto: async (_, { texto }) => {
+            const productos = await Producto.find({ $text: { $search: texto } })
+            return productos;
         }
     },
     Mutation: {
