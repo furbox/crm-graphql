@@ -17,6 +17,7 @@ const CLIENTES = gql`
       apellido
       empresa
       email
+      telefono
     }
   }
 `;
@@ -98,6 +99,7 @@ const TableCliente = ({ cliente }) => {
             <td className="border border-gray-200 px-4 py-2">{nombre} {apellido}</td>
             <td className="border border-gray-200 px-4 py-2">{empresa}</td>
             <td className="border border-gray-200 px-4 py-2">{email}</td>
+            <td className="border border-gray-200 px-4 py-2">{telefono}</td>
             <td className="border border-gray-200 px-4 py-2">
                 <button onClick={() => btnDelereCliente(id)} className="flex border justify-center border-red-300 p-1 rounded text-red-300 hover:bg-red-300 hover:text-red-50 ">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

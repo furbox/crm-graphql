@@ -11,6 +11,7 @@ const CLIENTES = gql`
       apellido
       empresa
       email
+      telefono
     }
   }
 `;
@@ -34,6 +35,7 @@ const Index = () => {
               <th className="w-1/5 py-2">Nombre</th>
               <th className="w-1/5 py-2">Empresa</th>
               <th className="w-1/5 py-2">Email</th>
+              <th className="w-1/5 py-2">telefono</th>
               <th></th>
             </tr>
           </thead>

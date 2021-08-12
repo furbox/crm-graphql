@@ -27,6 +27,7 @@ const CLIENTES = gql`
       apellido
       empresa
       email
+      telefono
     }
   }
 `;
