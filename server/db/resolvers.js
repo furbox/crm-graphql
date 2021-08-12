@@ -15,9 +15,8 @@ const crearToken = (usuario) => {
 //Resolvers Graphql
 const resolvers = {
     Query: {
-        obtenerUsuario: async (_, { token }) => {
-            const usuarioId = await jwt.verify(token, process.env.JWT_KEY_SECRET);
-            return usuarioId;
+        obtenerUsuario: async (_, { }, ctx) => {
+            return ctx.usuario;
         },
         obtenerProductos: async () => {
             try {
