@@ -1,6 +1,7 @@
 import Layout from '../components/Layout';
 import { useQuery, gql } from '@apollo/client';
 import Link from 'next/link';
+import TableCliente from '../components/TableCliente';
 
 const CLIENTES = gql`
   query obtenerClientesVendedor{
@@ -17,7 +18,7 @@ const CLIENTES = gql`
 const Index = () => {
   //consulta apollo
   const { data, loading, error } = useQuery(CLIENTES);
-  if(loading) return 'Cargando...';
+  if (loading) return 'Cargando...';
 
   return (
     <div>
@@ -33,15 +34,12 @@ const Index = () => {
               <th className="w-1/5 py-2">Nombre</th>
               <th className="w-1/5 py-2">Empresa</th>
               <th className="w-1/5 py-2">Email</th>
+              <th></th>
             </tr>
           </thead>
           <tbody className="bg-gray-100">
             {data.obtenerClientesVendedor.map(cliente => (
-              <tr key={cliente.id}>
-                <td className="border border-gray-200 px-4 py-2">{cliente.nombre} {cliente.apellido}</td>
-                <td className="border border-gray-200 px-4 py-2">{cliente.empresa}</td>
-                <td className="border border-gray-200 px-4 py-2">{cliente.email}</td>
-              </tr>
+              <TableCliente key={cliente.id} cliente={cliente} />
             ))}
           </tbody>
         </table>
