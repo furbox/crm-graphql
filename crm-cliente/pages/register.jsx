@@ -1,7 +1,10 @@
 import Layout from '../components/Layout';
+import { useRouter } from 'next/router';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useMutation, gql } from '@apollo/client';
+import Swal from 'sweetalert2';
+import { useEffect, useState } from 'react';
 
 //consulta graphql para registrar un usuario
 const REGISTER = gql`
@@ -16,8 +19,36 @@ const REGISTER = gql`
 `;
 
 const Register = () => {
+  //guardar Mensaje
+  const [mensaje, setMensaje] = useState(null);
+  const [err, setErr] = useState(false)
+
+  useEffect(() => {
+    if (mensaje && !err) {
+      notification(mensaje, 'success');
+    }
+    if (mensaje && err) {
+      notification(mensaje, 'error');
+    }
+
+    function notification(mensaje, icon) {
+      Swal.fire({
+        position: 'top-end',
+        icon,
+        title: mensaje,
+        showConfirmButton: false,
+        timer: 3000
+      })
+    }
+  }, [mensaje])
+
+
+
   //Mutation para registrar un usuario
-  const [nuevoUsuario] =  useMutation(REGISTER);
+  const [nuevoUsuario] = useMutation(REGISTER);
+
+  //routing
+  const router = useRouter();
 
   //validacion del formulario
   const formik = useFormik({
@@ -37,8 +68,27 @@ const Register = () => {
           "El password debe contener al menos 8 Caracteres, Una Mayúscula, Una Minúscula, Un Numero y un caracter especial (@$!%*#?&)"
         )
     }),
-    onSubmit: inputs => {
-      console.log(inputs);
+    onSubmit: async inputs => {
+      const { nombre, apellido, email, password } = inputs;
+      try {
+        const { data } = await nuevoUsuario({
+          variables: {
+            input: {
+              nombre, apellido, email, password
+            }
+          }
+        });
+        setErr(false);
+        setMensaje('Cuenta registrada Satifactoriamente, puedes iniciar Sesión');
+        setMensaje(null);
+        setTimeout(() => {
+          router.push('/login');
+        },3500)
+      } catch (error) {
+        setErr(true);
+        setMensaje(error.message.toString());
+        setMensaje(null)
+      }
     }
   });
 
@@ -60,7 +110,7 @@ const Register = () => {
               }
               <div className="mb-5">
                 <label htmlFor="apellido" className="block text-gray-900 text-sm font-bold mb-2">Apellido</label>
-                <input onChange={formik.handleChange} value={formik.values.apellido} type="text" id="apellido" required placeholder="Apellido" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+                <input onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.apellido} type="text" id="apellido" required placeholder="Apellido" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
               </div>
               {
                 formik.touched.apellido && formik.errors.apellido ? (
@@ -69,7 +119,7 @@ const Register = () => {
               }
               <div className="mb-5">
                 <label htmlFor="email" className="block text-gray-900 text-sm font-bold mb-2">Email</label>
-                <input onChange={formik.handleChange} value={formik.values.email} type="email" id="email" required placeholder="Email" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+                <input onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.email} type="email" id="email" required placeholder="Email" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
               </div>
               {
                 formik.touched.email && formik.errors.email ? (
@@ -78,7 +128,7 @@ const Register = () => {
               }
               <div className="mb-5">
                 <label htmlFor="password" className="block text-gray-900 text-sm font-bold mb-2">Password</label>
-                <input onChange={formik.handleChange} value={formik.values.password} type="password" id="password" required placeholder="Password" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+                <input onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.password} type="password" id="password" required placeholder="Password" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
               </div>
               {
                 formik.touched.password && formik.errors.password ? (
