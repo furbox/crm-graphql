@@ -23,7 +23,6 @@ const Index = () => {
   //consulta apollo
   const { data, loading, error } = useQuery(CLIENTES);
   if(loading) return 'Cargando...';
-  console.log(data);
 
   return (
     <div>
