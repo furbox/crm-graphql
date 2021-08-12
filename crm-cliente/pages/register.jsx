@@ -94,7 +94,7 @@ const Register = () => {
 
   return (
     <div>
-      <Layout>
+      <Layout title="Register" description="Registro de Usuarios">
         <h1 className="text-2xl text-center text-gray-50 font-light">Registrarse</h1>
         <div className="flex justify-center mt-5">
           <div className="w-full max-w-sm">

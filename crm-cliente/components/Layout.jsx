@@ -1,18 +1,19 @@
-import React from 'react';
 import Head from 'next/head';
 import Sidebar from './Sidebar';
 import { useRouter } from 'next/router';
 import Header from './Header';
+import PropTypes from 'prop-types';
+import HeadTitle from './HeadTitle';
 
-const Layout = ({ children }) => {
+const Layout = ({ children, title, description, headtitle }) => {
     //routing de next
     const router = useRouter();
     return (
         <>
             <Head>
-                <title>CRM - Administracion de Clientes</title>
+                <title>{title}</title>
+                <meta name="description" content={description} />
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
-                <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
             </Head>
 
             {router.pathname === "/login" || router.pathname === "/register" ? (
@@ -26,7 +27,8 @@ const Layout = ({ children }) => {
                     <div className="flex min-h-screen">
                         <Sidebar />
                         <main className="sm:w-3/4 xl:w-4/5 sm:min-h-screen p-5">
-                            <Header/>
+                            <Header />
+                            <HeadTitle headtitle={headtitle} />
                             {children}
                         </main>
                     </div>
@@ -36,6 +38,12 @@ const Layout = ({ children }) => {
 
         </>
     )
+}
+
+Layout.defaultProps = {
+    title: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    headtitle: PropTypes.string.isRequired
 }
 
 export default Layout

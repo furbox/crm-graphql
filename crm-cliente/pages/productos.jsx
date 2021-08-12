@@ -2,8 +2,7 @@ import Layout from '../components/Layout';
 
 const Productos = () => (
   <div>
-    <Layout>
-    <h1 className="text-2xl text-gray-900 font-light">Productos</h1>
+    <Layout title="CRM - Productos" description="Modulo de Productos" headtitle="Lista de Productos">
     </Layout>
   </div>
 )

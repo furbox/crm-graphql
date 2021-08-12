@@ -1,11 +1,6 @@
-import Head from 'next/head';
 import Layout from '../components/Layout';
-import { useRouter } from 'next/router';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
 import { useQuery, gql } from '@apollo/client';
-import Swal from 'sweetalert2';
-import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 const CLIENTES = gql`
   query obtenerClientesVendedor{
@@ -26,11 +21,12 @@ const Index = () => {
 
   return (
     <div>
-      <Layout>
-        <Head>
-          <title>CRM - Clientes</title>
-        </Head>
-        <h1 className="text-2xl text-gray-700 font-light">Clientes</h1>
+      <Layout title="CRM - Clientes" description="Modulo de Clientes" headtitle="Lista de Clientes">
+        <div className="flex w-full justify-end">
+          <Link href="clientes/crear">
+            <a className="text-gray-900 p-2 font-bold border rounded bg-blue-50 hover:bg-gray-900 hover:text-gray-50"> + Crear Cliente</a>
+          </Link>
+        </div>
         <table className="rounded table-auto shadow-md mt-10 w-full w-lg">
           <thead className="bg-gray-700 border border-gray-700">
             <tr className="text-gray-50">
@@ -42,9 +38,9 @@ const Index = () => {
           <tbody className="bg-gray-100">
             {data.obtenerClientesVendedor.map(cliente => (
               <tr key={cliente.id}>
-                <td className="border border-gray-700 px-4 py-2">{cliente.nombre} {cliente.apellido}</td>
-                <td className="border border-gray-700 px-4 py-2">{cliente.empresa}</td>
-                <td className="border border-gray-700 px-4 py-2">{cliente.email}</td>
+                <td className="border border-gray-200 px-4 py-2">{cliente.nombre} {cliente.apellido}</td>
+                <td className="border border-gray-200 px-4 py-2">{cliente.empresa}</td>
+                <td className="border border-gray-200 px-4 py-2">{cliente.email}</td>
               </tr>
             ))}
           </tbody>

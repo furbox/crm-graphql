@@ -1,4 +1,3 @@
-
 import Layout from '../components/Layout';
 import { useRouter } from 'next/router';
 import { useFormik } from 'formik';
@@ -84,7 +83,7 @@ const Login = () => {
 
   return (
     <div>
-      <Layout>
+      <Layout title="CRM - Login" description="Iniciar Sesión" headtitle="Iniciar Sesión">
         <h1 className="text-2xl text-center text-gray-50 font-light">Iniciar Sesión</h1>
         <div className="flex justify-center mt-5">
           <div className="w-full max-w-sm">

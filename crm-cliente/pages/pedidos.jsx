@@ -2,8 +2,7 @@ import Layout from '../components/Layout';
 
 const Pedidos = () => (
   <div>
-    <Layout>
-    <h1 className="text-2xl text-gray-900 font-light">Pedidos</h1>
+    <Layout title="CRM - Pedidos" description="Modulo de Pedidos" headtitle="Lista de Pedidos">
     </Layout>
   </div>
 )

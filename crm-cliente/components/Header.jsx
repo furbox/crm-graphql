@@ -1,6 +1,6 @@
-import React from 'react';
 import { useQuery, gql } from '@apollo/client';
 import { useRouter } from 'next/router';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const AUTH = gql`
     query obtenerUsuario{
@@ -28,11 +28,13 @@ const Header = () => {
         localStorage.removeItem('Stoken');
         router.push('/login');
     }
-
     return (
         <div className="flex justify-end">
-            <p className="mr-5">{nombre}</p>
-            <button onClick={cerrarSesion} className="border border-gray-500 p-1 rounded-lg" type="button" >Cerrar Sesión</button>
+            <span className="w-1/9 mr-4"><FontAwesomeIcon icon={["fas","user-circle"]} size="2x" /></span>
+            <p className="mr-5 mt-1 text-center font-extrabold"> {nombre}</p>
+            <button onClick={cerrarSesion} className="border border-gray-500 p-1 rounded-lg" type="button" >
+                Cerrar Sesión
+            </button>
         </div>
     )
 }
