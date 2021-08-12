@@ -11,10 +11,25 @@ const CREAR_CLIENTE = gql`
     mutation nuevoCliente($input: ClienteInput) {
     nuevoCliente(input: $input) {
         id
+        nombre
+        apellido
+        empresa
+        email
+        telefono
     }
   }
 `;
-
+const CLIENTES = gql`
+  query obtenerClientesVendedor{
+    obtenerClientesVendedor{
+      id
+      nombre
+      apellido
+      empresa
+      email
+    }
+  }
+`;
 const crear = () => {
     //guardar Mensaje
     const [mensaje, setMensaje] = useState(null);
@@ -38,7 +53,19 @@ const crear = () => {
         }
     }, [mensaje]);
     //Mutation para crear un cliente
-    const [nuevoCliente] = useMutation(CREAR_CLIENTE);
+    const [nuevoCliente] = useMutation(CREAR_CLIENTE, {
+        update(cache, { data: { nuevoCliente} }) {
+            //actualizar un cache especifico
+            const { obtenerClientesVendedor } = cache.readQuery({ query: CLIENTES });
+            //reescribir cache
+            cache.writeQuery({
+                query: CLIENTES,
+                data: {
+                    obtenerClientesVendedor: [...obtenerClientesVendedor, nuevoCliente]
+                }
+            })
+        }
+    });
 
     //routing
     const router = useRouter();
