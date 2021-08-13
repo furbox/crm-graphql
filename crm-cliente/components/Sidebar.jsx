@@ -10,8 +10,13 @@ const Sidebar = () => {
                 <p className="text-gray-400 text-3xl font-black text-center">CRM</p>
             </div>
             <nav className="mt-5 list-none">
-                <li className={router.pathname === "/" ? "bg-gray-50 font-bold text-xl text-gray-900" : "text-gray-400"}>
+            <li className={router.pathname === "/" ? "bg-gray-50 font-bold text-xl text-gray-900" : "text-gray-400"}>
                     <Link href="/">
+                        <a className="p-3 w1/1 block hover:bg-gray-50 hover:text-gray-900">Dashboard</a>
+                    </Link>
+                </li>
+                <li className={router.pathname === "/clientes" ? "bg-gray-50 font-bold text-xl text-gray-900" : "text-gray-400"}>
+                    <Link href="/clientes">
                         <a className="p-3 w1/1 block hover:bg-gray-50 hover:text-gray-900">Clientes</a>
                     </Link>
                 </li>

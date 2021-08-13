@@ -1,7 +1,7 @@
-import Layout from '../components/Layout';
+import Layout from '../../components/Layout';
 import { useQuery, gql } from '@apollo/client';
 import Link from 'next/link';
-import TableProducto from '../components/TableProducto';
+import TableProducto from '../../components/TableProducto';
 
 const PRODUCTOS = gql`
   query obtenerProductos {
