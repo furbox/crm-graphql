@@ -1,30 +1,52 @@
 
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { useQuery, gql } from '@apollo/client';
 import Select from 'react-select';
+import PedidoContext from '../../context/pedidos/PedidoContext';
 
-const clientes = [
-    { id: '1', nombre: 'Chocolate' },
-    { id: '2', nombre: 'Strawberry' },
-    { id: '3', nombre: 'Vanilla' },
-];
+
+const CLIENTES = gql`
+  query obtenerClientesVendedor{
+    obtenerClientesVendedor{
+      id
+      nombre
+      apellido
+      empresa
+      email
+      telefono
+    }
+  }
+`;
 
 const AsignarCliente = () => {
+    //consulta apollo
     const [cliente, setCliente] = useState([]);
-    useEffect(() => {
-        console.log(cliente);
 
-    }, [cliente]);
+    //context de pedidos
+    const pedidoContext = useContext(PedidoContext);
+    const { agregarCliente } = pedidoContext;
+
+    const { data, loading, error } = useQuery(CLIENTES);
+
+    // useEffect(() => {
+    //     console.log(cliente);
+    // }, [cliente]);
 
     const seleccionarCliente = cliente => {
-        setCliente(cliente);
+        agregarCliente(cliente);
     }
+
+    if (loading) return 'Cargando...';
+
+    const { obtenerClientesVendedor } = data;
 
     return (
         <>
-            <p>Seleccione un cliente</p>
+            <p className="text-gray-900 font-bold mt-10 my-2 p-2 border-l-4 border-gray-900 bg-gray-100 ">Seleccione un cliente</p>
             <Select
-                options={clientes}
-                onChange={seleccionarCliente}
+                className="mt-3 mb-3"
+                options={obtenerClientesVendedor}
+                onChange={opcion => seleccionarCliente(opcion)}
                 getOptionValue={opciones => opciones.id}
                 getOptionLabel={opciones => opciones.nombre}
                 ṕlaceholder="Seleccione Cliente"
