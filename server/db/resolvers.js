@@ -304,7 +304,7 @@ const resolvers = {
                 }
 
                 //guardar el cliente
-                await Cliente.findOneAndUpdate({ _id: id });
+                cliente = await Cliente.findOneAndUpdate({ _id: id }, input, { new: true });
                 return cliente;
             } catch (error) {
                 console.log('[ERROR]: M-Cli actualizarCliente', error);
