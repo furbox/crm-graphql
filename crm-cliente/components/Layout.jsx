@@ -34,8 +34,6 @@ const Layout = ({ children, title, description, headtitle }) => {
                     </div>
                 </div>
             )}
-
-
         </>
     )
 }

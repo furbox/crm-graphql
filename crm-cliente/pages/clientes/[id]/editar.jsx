@@ -1,6 +1,6 @@
 import Layout from "../../../components/Layout";
 import { useRouter } from 'next/router';
-import { useFormik, Formik } from 'formik';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useQuery, useMutation, gql } from '@apollo/client';
 import Swal from 'sweetalert2';
@@ -33,19 +33,6 @@ const OBTENER_CLIENTE = gql`
     }
 `;
 
-const CLIENTES = gql`
-  query obtenerClientesVendedor{
-    obtenerClientesVendedor{
-      id
-      nombre
-      apellido
-      empresa
-      email
-      telefono
-    }
-  }
-`;
-
 const editar = () => {
     //guardar Mensaje
     const [mensaje, setMensaje] = useState(null);
@@ -71,8 +58,6 @@ const editar = () => {
 
     //Mutation para crear un cliente
     const [actualizarCliente, { data: d, loading: l, error: er }] = useMutation(EDITAR_CLIENTE);
-    console.log("data",d);
-    console.log("error",er);
 
     //routing
     const router = useRouter();
@@ -97,53 +82,7 @@ const editar = () => {
 
     const { obtenerCliente } = data;
 
-
-    // //validacion del formulario
-    // const formik = useFormik({
-    //     initialValues: {
-    //         nombre: '',
-    //         apellido: '',
-    //         empresa: '',
-    //         email: '',
-    //         telefono: '',
-    //     },
-    // validationSchema: Yup.object({
-    //     nombre: Yup.string().required('El Nombre es obligatorio'),
-    //     apellido: Yup.string().required('El Apellido es obligatorio'),
-    //     empresa: Yup.string().required('La Empresa es obligatoria'),
-    //     email: Yup.string().email('El Email no es valido').required('El Email es obligatorio'),
-    //     telefono: Yup.string().required('El Telefono es obligatorio')
-    // }),
-    //     onSubmit: async inputs => {
-    //         const { nombre, apellido, empresa, email, telefono } = inputs;
-    //         try {
-    //             const { data } = await actualizarCliente({
-    //                 variables: {
-    //                     input: {
-    //                         nombre,
-    //                         apellido,
-    //                         empresa,
-    //                         email,
-    //                         telefono
-    //                     }
-    //                 }
-    //             });
-    //             setErr(false);
-    //             setMensaje('Cliente agregado. Redirigiendo...');
-    //             setMensaje(null);
-    //             setTimeout(() => {
-    //                 router.push('/');
-    //             }, 3500)
-    //         } catch (error) {
-    //             setErr(true);
-    //             setMensaje(error.message.toString());
-    //             setMensaje(null)
-    //         }
-    //     }
-    // });
-
     const updateCliente = async (inputs) => {
-        console.log(inputs);
         const { nombre, apellido, empresa, email, telefono } = inputs;
         try {
             const { data } = await actualizarCliente({
@@ -158,9 +97,7 @@ const editar = () => {
                     }
                 }
             });
-            console.log(data);
-            console.log(data);
-            console.log(data);
+            
             setErr(false);
             setMensaje('Cliente actualizado. Redirigiendo...');
             setMensaje(null);
@@ -173,6 +110,7 @@ const editar = () => {
             setMensaje(null)
         }
     }
+
     return (
         <Layout title="CRM - Editar Cliente" description="Editar Cliente" headtitle="Editar Cliente">
             <div className="flex shadow-lg rounded justify-center mt-5 border border-gray-100">
