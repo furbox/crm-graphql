@@ -10,12 +10,6 @@
   },
   "dependencies": {
     "@apollo/client": "^3.4.7",
-    "@fortawesome/fontawesome-free": "^5.15.4",
-    "@fortawesome/fontawesome-svg-core": "^1.2.36",
-    "@fortawesome/free-brands-svg-icons": "^5.15.4",
-    "@fortawesome/free-regular-svg-icons": "^5.15.4",
-    "@fortawesome/free-solid-svg-icons": "^5.15.4",
-    "@fortawesome/react-fontawesome": "^0.1.15",
     "apollo-link-context": "^1.0.20",
     "formik": "^2.2.9",
     "graphql": "^15.5.1",

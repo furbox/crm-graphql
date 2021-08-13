@@ -1,6 +1,5 @@
 import { useQuery, gql } from '@apollo/client';
 import { useRouter } from 'next/router';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const AUTH = gql`
     query obtenerUsuario{
@@ -30,8 +29,11 @@ const Header = () => {
     }
     return (
         <div className="flex justify-end">
-            <span className="w-1/9 mr-4"><FontAwesomeIcon icon={["fas","user-circle"]} size="2x" /></span>
-            <p className="mr-5 mt-1 text-center font-extrabold"> {nombre}</p>
+
+            <p className="flex mr-5 mt-1 text-center font-extrabold">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg> <span className="text-center m-1"> {nombre}</span> </p>
             <button onClick={cerrarSesion} className="border border-gray-500 p-1 rounded-lg" type="button" >
                 Cerrar Sesión
             </button>
