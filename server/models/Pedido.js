@@ -21,7 +21,7 @@ const PedidoSchema = mongoose.Schema({
     },
     estado: {
         type: String,
-        default: "Pendiente"
+        default: "PENDIENTE"
     }
 }, {
     versionKey: false,

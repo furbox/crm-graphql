@@ -10,7 +10,6 @@ const PRODUCTOS = gql`
       nombre
       existencia
       precio
-      createdAt
     }
   }
 `;

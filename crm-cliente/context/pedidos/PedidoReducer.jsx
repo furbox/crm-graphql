@@ -7,19 +7,21 @@ export default (state, action) => {
                 ...state,
                 cliente: action.payload
             }
-
-            break;
         case types.SELECCIONAR_PRODUCTOS:
             return {
                 ...state,
                 productos: action.payload
             }
-            break;
-
         case types.CANTIDAD_PRODUCTOS:
-
-            break;
-
+            return {
+                ...state,
+                productos: state.productos.map(producto => producto.id === action.payload.id ? producto = action.payload : producto)
+            }
+        case types.ACTUALIZAR_TOTAL:
+            return {
+                ...state,
+                total: state.productos.reduce((nuevoTotal, articulo) => nuevoTotal += articulo.precio * articulo.cantidad, 0)
+            }
         default:
             return state;
     }
